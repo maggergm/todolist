@@ -1,0 +1,76 @@
+import os
+import json
+
+TODO_FILE = 'todo_list.json'
+
+def load_todo_list():
+    if os.path.exists(TODO_FILE):
+        with open(TODO_FILE, 'r') as file:
+            return json.load(file)
+    return []
+
+def save_todo_list(todo_list):
+    with open(TODO_FILE, 'w') as file:
+        json.dump(todo_list, file)
+
+def add_task(task):
+    todo_list = load_todo_list()
+    todo_list.append({'task': task, 'done': False})
+    save_todo_list(todo_list)
+    print(f'Task "{task}" added.')
+
+def view_tasks():
+    todo_list = load_todo_list()
+    if not todo_list:
+        print('No tasks in the list.')
+    else:
+        for i, task in enumerate(todo_list, start=1):
+            status = 'Done' if task['done'] else 'Not Done'
+            print(f'{i}. {task["task"]} [{status}]')
+
+def remove_task(task_number):
+    todo_list = load_todo_list()
+    if 0 < task_number <= len(todo_list):
+        removed_task = todo_list.pop(task_number - 1)
+        save_todo_list(todo_list)
+        print(f'Task "{removed_task["task"]}" removed.')
+    else:
+        print('Invalid task number.')
+
+def mark_task_done(task_number):
+    todo_list = load_todo_list()
+    if 0 < task_number <= len(todo_list):
+        todo_list[task_number - 1]['done'] = True
+        save_todo_list(todo_list)
+        print(f'Task "{todo_list[task_number - 1]["task"]}" marked as done.')
+    else:
+        print('Invalid task number.')
+
+def main():
+    while True:
+        print('\nTo-Do List:')
+        print('1. View tasks')
+        print('2. Add task')
+        print('3. Remove task')
+        print('4. Mark task as done')
+        print('5. Exit')
+        choice = input('Enter your choice: ')
+        
+        if choice == '1':
+            view_tasks()
+        elif choice == '2':
+            task = input('Enter the task: ')
+            add_task(task)
+        elif choice == '3':
+            task_number = int(input('Enter the task number to remove: '))
+            remove_task(task_number)
+        elif choice == '4':
+            task_number = int(input('Enter the task number to mark as done: '))
+            mark_task_done(task_number)
+        elif choice == '5':
+            break
+        else:
+            print('Invalid choice. Please try again.')
+
+if __name__ == '__main__':
+    main()
